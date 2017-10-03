@@ -18,6 +18,10 @@ class ViewController: UIViewController {
     var timer: Timer!
     //UIImageViewのOutlet
     @IBOutlet weak var imageView: UIImageView!
+    //3ボタンのOutlet
+    @IBOutlet weak var backBtn: UIButton!
+    @IBOutlet weak var nextBtn: UIButton!
+    @IBOutlet weak var startstopBtn: UIButton!
     
     //写真を映し出す関数
     func display(){
@@ -64,7 +68,6 @@ class ViewController: UIViewController {
             imageNo += 1
             print(imageNo)
             display()
-
         }
     }
     
@@ -74,21 +77,36 @@ class ViewController: UIViewController {
         if timer == nil{
             //停止状態の処理
             timer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(slideshow), userInfo: nil, repeats: true)
+            //ボタンタップ不可の処理
+            backBtn.isEnabled = false
+            nextBtn.isEnabled = false
+            //ボタン名の変更
+            startstopBtn.setTitle("停止", for: .normal)
         }else{
             //再生状態の処理
             timer.invalidate()
             timer = nil
+            //ボタンタップ可の処理
+            backBtn.isEnabled = true
+            nextBtn.isEnabled = true
+            //ボタン名の変更
+            startstopBtn.setTitle("再生", for: .normal)
         }
     }
     
-    //画像をタップした時の処理
     @IBAction func tapImage(_ sender: Any) {
-        //タイマーを止める
-        timer.invalidate()
-        timer = nil
+        //再生状態の場合タイマーを止める
+        if timer != nil {
+            timer.invalidate()
+            timer = nil
+            //ボタンタップ可の処理
+            backBtn.isEnabled = true
+            nextBtn.isEnabled = true
+            //ボタン名の変更
+            startstopBtn.setTitle("再生", for: .normal)
+        }
         //セグエを使用して画面を遷移
         performSegue(withIdentifier: "result", sender: nil)
-        
     }
     
     override func viewDidLoad() {
@@ -96,6 +114,11 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         display()
         timer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(slideshow), userInfo: nil, repeats: true)
+        //ボタンタップ不可の処理
+        backBtn.isEnabled = false
+        nextBtn.isEnabled = false
+        //ボタン名の変更
+        startstopBtn.setTitle("停止", for: .normal)
         
     }
 
@@ -107,7 +130,7 @@ class ViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // segueから遷移先のResultViewControllerを取得する
         let resultViewController:ResultViewController = segue.destination as! ResultViewController
-        // 遷移先のResultViewControllerで宣言しているx, yに値を代入して渡す
+        // 遷移先のResultViewControllerで宣言しているno, imageに値を代入して渡す
         resultViewController.no = imageNo
         resultViewController.Image = imageArray
     }
